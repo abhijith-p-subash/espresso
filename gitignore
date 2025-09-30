@@ -1,0 +1,83 @@
+# Python virtual environments
+venv/
+.venv/
+env/
+.env/
+*venv/
+
+
+========================
+Python-specific Ignored Files
+========================
+Byte-compiled / optimized / DLL files
+pycache/
+*.py[cod]
+*$py.class
+
+C extensions
+*.so
+*.os
+*.dll
+*.pyd
+
+Distribution / Packaging
+These folders contain the build artifacts, including the final .msi, .exe, etc.
+build/
+dist/
+*.egg-info/
+.eggs/
+
+Environments
+.venv/
+venv/
+env/
+/bin/
+/include/
+/lib/
+/lib64/
+
+Test / Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.nox/
+
+Third-party dependencies
+If using pip freeze, requirements.txt should be committed, but the packages themselves shouldn't
+If you check-in requirements.txt, you can uncomment the next line
+pip-wheel-cache/
+========================
+Installer/MSI Specific Ignored Files
+========================
+Output files from installer creation tools (like WiX, setuptools, cx_Freeze, PyInstaller)
+*.msi
+*.exe
+*.pkg
+*.dmg
+*.spec # PyInstaller spec files, often generated in the root or build/
+
+Temporary files created during the build process
+Specific to certain setups, but often covered by 'build/'
+_MEI*/
+
+========================
+IDE and OS Ignored Files
+========================
+Operating System files
+.DS_Store
+Thumbs.db
+
+VS Code
+.vscode/
+
+PyCharm / IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+Jupyter Notebook
+.ipynb_checkpoints
+
+History files
+.python_history
