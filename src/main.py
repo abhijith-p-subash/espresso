@@ -68,7 +68,7 @@ class Espresso:
             return
         self._stop_event.clear()
         self.thread = threading.Thread(target=self._run, daemon=True)
-        self.thread = self.thread.start()
+        self.thread.start()
         print(f"▶️ Espresso started - every {self.interval}s")
 
     def stop(self, icon=None, item=None):
