@@ -17,9 +17,9 @@ dist/
 
 # PyInstaller
 *.spec
-*.exe
-*.app
-*.dmg
+# *.exe
+# *.app
+# *.dmg
 
 # macOS
 .DS_Store
