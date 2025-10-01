@@ -1,7 +1,10 @@
 {
     "cSpell.words": [
         "bdist",
+        "MEIPASS",
         "onefile",
-        "pyinstaller"
+        "pyinstaller",
+        "pynput",
+        "pystray"
     ]
 }

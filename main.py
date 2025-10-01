@@ -36,7 +36,7 @@ class Espresso:
 
     def _menu(self):
         return Menu(
-            MenuItem("Start", self.start, default=True),
+            MenuItem("Start", self.start),
             MenuItem("Stop", self.stop),
             MenuItem("Quit", self.quit)
         )
@@ -47,8 +47,6 @@ class Espresso:
     def simulate_activity(self):
         """Simulate user activity""" 
         try:
-            # self.keyboard.press(Key.scroll_lock)
-            # self.keyboard.release(Key.scroll_lock)
             self.keyboard.press(Key.f15)
             self.keyboard.release(Key.f15)
             print(f"☑️ Activity at {time.strftime('%a %b %d %H:%M:%S %Y')}")
@@ -85,6 +83,7 @@ class Espresso:
         self.icon.stop()
 
     def run(self):
+        self.start()
         self.icon.run()
 
 
