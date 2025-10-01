@@ -25,12 +25,12 @@ dist/
 .DS_Store
 .AppleDouble
 .LSOverride
-*.icns
+
 
 # Windows
 Thumbs.db
 desktop.ini
-*.ico
+
 
 # Linux
 *~
