@@ -17,9 +17,10 @@ def resource_path(relative_path):
     try:
         # PyInstaller stores files in _MEIPASS
         base_path = sys._MEIPASS
-    except AttributeError:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
+    except Exception:
+        # base_path = os.path.abspath(".")
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    return os.path.join(base_path, "assets", relative_path)
 
 class Espresso:
     def __init__(self, interval=60):

@@ -1,4 +1,9 @@
+altgraph==0.17.4
+macholib==1.16.3
+packaging==25.0
 pillow==11.3.0
+pyinstaller==6.16.0
+pyinstaller-hooks-contrib==2025.9
 pynput==1.8.1
 pyobjc-core==11.1
 pyobjc-framework-ApplicationServices==11.1
@@ -6,4 +11,5 @@ pyobjc-framework-Cocoa==11.1
 pyobjc-framework-CoreText==11.1
 pyobjc-framework-Quartz==11.1
 pystray==0.19.5
+setuptools==80.9.0
 six==1.17.0
