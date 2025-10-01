@@ -1,47 +1,49 @@
-pyinstaller --onefile --windowed main.py --icon=my_icon.ico
+# Espresso ☕️
+
+**Espresso** is a lightweight, cross-platform tray application that keeps your computer awake by simulating key activity at regular intervals. Perfect for preventing your system from going to sleep or locking automatically.  
+
+It supports **Windows, macOS, and Linux**, and runs silently in the system tray with a simple Start/Stop/Quit menu.
+
+---
+
+## Features
+
+- Runs in the **system tray** (Windows/Mac/Linux)  
+- **Start/Stop** simulation with menu  
+- **Custom tray icon** support  
+- Lightweight, minimal CPU usage  
+- Cross-platform (Windows `.exe`, macOS `.app`, Linux binary)  
+
+---
+
+## Folder Structure
+
+Espresso/
+├── assets/
+│ ├── c5.png # Tray icon
+│ ├── c5.ico # Windows icon
+│ └── c5.icns # macOS icon
+├── src/
+│ └── main.py # Main application code
+├── dist/ # Build outputs
+├── build/ # Temporary build files
+├── venv/ # Virtual environment
+├── requirements.txt # Python dependencies
+└── .gitignore
 
 
-2. Check build command
 
-For Windows, you must use ; in --add-data:
+---
 
-pyinstaller --onefile --windowed --add-data "c5.png;." main.py --icon=c5.ico
+## Prerequisites
 
+- Python 3.13+  
+- Pip  
+- Virtual environment (recommended)
 
-For Mac/Linux, use : instead:
+Install dependencies:
 
-pyinstaller --onefile --windowed --add-data "c5.png:." main.py --icon=c5.ico
-
-
-⚠️ If you’re on Windows and use :, PyInstaller will silently skip including the file → causing your exact error.
-
-
-build msi file using cx_freeze: python setup.py bdist_msi
-
---------------------------------------------
-1. windows (.exe)
-
-pyinstaller --onefile --windowed --add-data "assets\c5.png;assets" src\main.py --icon=assets\c5.ico --name Espresso
+```bash
+pip install -r requirements.txt
 
 
-* --add-data "assets\\c5.png;assets" → includes assets in bundle
-
-* Output: dist/Espresso.exe
-
-2. mac (.app)
-
-pyinstaller --onefile --windowed --add-data "assets/c5.png:assets" src/main.py --icon=assets/c5.icns --name Espresso
-
-
-  * --add-data "assets/c5.png:assets" (use : on macOS/Linux)
-  * Output: dist/Espresso.app
-  * Optional .dmg:  create-dmg dist/Espresso.app --overwrite --dmg-title="Espresso" .
-
-3. Linux (binary)
-pyinstaller --onefile --windowed \
-  --add-data "assets/c5.png:assets" \
-  src/main.py --name espresso
-
-* Output: dist/espresso (executable ELF binary)
-
-* You can wrap into .deb or .rpm later if needed.
