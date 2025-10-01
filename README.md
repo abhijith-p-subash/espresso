@@ -90,9 +90,9 @@ Pre-built binaries can be distributed
 
 | Platform  | File |
 | ------------- |:-------------:|
-| Windows     | `Espresso.exe`     |
-| MacOS      | `Espresso.app` or `,dmg`     |
-| Linux      | `espresso` (binary)    |
+| Windows     | [`Espresso.exe`](https://github.com/abhijith-p-subash/espresso/releases/latest/download/espresso.exe)     |
+| MacOS      | [`Espresso.app` or `,dmg`](https://github.com/abhijith-p-subash/espresso/releases/latest/download/espresso.zip)   |
+| Linux      | [`espresso` ](https://github.com/abhijith-p-subash/espresso/releases/latest/download/espresso-linux.zip)    |
  
  ---
 
