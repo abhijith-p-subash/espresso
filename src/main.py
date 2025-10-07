@@ -23,6 +23,7 @@ def resource_path(relative_path):
 
 class Espresso:
     def __init__(self, interval=60):
+        self.running = False
         self.interval = interval
         self.keyboard = KeyController()
         self._stop_event = threading.Event()
@@ -36,6 +37,7 @@ class Espresso:
 
     def _menu(self):
         return Menu(
+            MenuItem(lambda item: f"Status: {'Running 😊' if self.running else 'Stopped 💀'}", None, enabled=False),
             MenuItem("Start", self.start),
             MenuItem("Stop", self.stop),
             MenuItem("Quit", self.quit)
@@ -69,18 +71,20 @@ class Espresso:
         self._stop_event.clear()
         self.thread = threading.Thread(target=self._run, daemon=True)
         self.thread.start()
+        self.running = True
         print(f"▶️ Espresso started - every {self.interval}s")
 
     def stop(self, icon=None, item=None):
         self._stop_event.set()
         if self.thread:
             self.thread.join(timeout=1)
+        self.running = False
         print("⏹️ Espresso Stopped")
 
     def quit(self, icon=None, item=None):
         print("👋 Exiting...")
         self.stop()
-        self.icon.stop()
+        self.icon.stop() 
 
     def run(self):
         self.start()
