@@ -55,6 +55,14 @@ class SingleInstance:
 
     @staticmethod
     def _lock(fd: int) -> None:
+        """Take an exclusive, non-blocking lock on the first byte.
+
+        The two platforms differ in a way worth knowing: POSIX ``flock`` is
+        *advisory*, so the PID written below stays readable by anything that
+        cares to look. ``msvcrt.locking`` is *mandatory*, so on Windows the
+        file cannot be read at all while the lock is held — not even by us.
+        Mutual exclusion works identically either way.
+        """
         if sys.platform == "win32":
             import msvcrt
 
