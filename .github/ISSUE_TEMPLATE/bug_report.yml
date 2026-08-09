@@ -1,0 +1,91 @@
+name: Bug report
+description: Something isn't working
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The log file usually answers half of this —
+        find it via **Open log file** in the tray menu.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you get instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Launch Espresso with ...
+        2. Set the mode to ...
+        3. Wait ... minutes
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS
+        - Windows
+        - Linux
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: OS version
+      placeholder: "macOS 15.2 / Windows 11 23H2 / Ubuntu 24.04 + GNOME"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Espresso version
+      description: Shown at the bottom of the tray menu, or run `espresso --version`.
+      placeholder: "1.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it?
+      options:
+        - Pre-built binary from Releases
+        - From source
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Which mode were you using?
+      options:
+        - Sleep + activity (default)
+        - Prevent sleep only
+        - Simulate activity only
+        - Not sure
+
+  - type: checkboxes
+    id: macos-permission
+    attributes:
+      label: macOS only
+      options:
+        - label: Espresso has Accessibility permission (System Settings → Privacy & Security → Accessibility)
+          required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log output
+      description: Paste the relevant part of the log. It will be formatted automatically.
+      render: shell

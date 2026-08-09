@@ -1,11 +1,20 @@
+# Pinned runtime dependencies, used for reproducible builds and releases.
+# Installing this file works on Windows and Linux too: the macOS-only PyObjC
+# wheels carry environment markers so pip skips them elsewhere.
+#
+# For an editable install with the same set, run:  pip install -e .
+
 pillow==11.3.0
 pynput==1.8.1
-pyobjc-core==11.1
-pyobjc-framework-ApplicationServices==11.1
-pyobjc-framework-Cocoa==11.1
-pyobjc-framework-CoreText==11.1
-pyobjc-framework-Quartz==11.1
 pystray==0.19.5
-setuptools==80.9.0
 six==1.17.0
-wheel==0.45.1
+
+# macOS only — PyObjC has no wheels for other platforms and would fail to build.
+pyobjc-core==11.1; sys_platform == "darwin"
+pyobjc-framework-ApplicationServices==11.1; sys_platform == "darwin"
+pyobjc-framework-Cocoa==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreText==11.1; sys_platform == "darwin"
+pyobjc-framework-Quartz==11.1; sys_platform == "darwin"
+
+# Linux only — the pystray/pynput X11 back ends need python-xlib.
+python-xlib==0.33; sys_platform == "linux"
