@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "espresso-tray"
+# Single source of truth: src/espresso/__init__.py
+dynamic = ["version"]
+description = "A lightweight cross-platform tray app that keeps your computer awake."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Abhijith P Subash", email = "abhijith.p.subash@gmail.com" }]
+keywords = ["keep-awake", "caffeine", "tray", "no-sleep", "insomnia", "presence"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: MacOS X",
+  "Environment :: Win32 (MS Windows)",
+  "Environment :: X11 Applications",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Topic :: Utilities",
+]
+dependencies = [
+  "pillow>=10.0",
+  "pynput>=1.7",
+  "pystray>=0.19",
+  "pyobjc-core>=9.0; sys_platform == 'darwin'",
+  "pyobjc-framework-ApplicationServices>=9.0; sys_platform == 'darwin'",
+  "pyobjc-framework-Cocoa>=9.0; sys_platform == 'darwin'",
+  "pyobjc-framework-Quartz>=9.0; sys_platform == 'darwin'",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pytest-timeout>=2.2", "ruff>=0.5"]
+build = ["pyinstaller>=6.0"]
+
+[project.urls]
+Homepage = "https://github.com/abhijith-p-subash/espresso"
+Issues = "https://github.com/abhijith-p-subash/espresso/issues"
+Changelog = "https://github.com/abhijith-p-subash/espresso/blob/master/CHANGELOG.md"
+
+[project.scripts]
+espresso = "espresso.cli:main"
+
+[project.gui-scripts]
+espresso-tray = "espresso.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.dynamic]
+version = { attr = "espresso.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["espresso*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --timeout=60"
+filterwarnings = ["error::DeprecationWarning:espresso.*"]
+
+[tool.ruff]
+line-length = 96
+target-version = "py39"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "RET", "ARG", "PTH"]
+ignore = [
+  "B008",   # function call in default argument — not used here
+  "ARG002", # unused method arguments: pystray hands every callback (icon, item)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ARG001", "ARG002"]

@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build and publish (e.g. v1.1.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-latest, label: macos, artifact: Espresso-macos }
+          - { os: windows-latest, label: windows, artifact: Espresso-windows }
+          - { os: ubuntu-latest, label: linux, artifact: Espresso-linux }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Linux tray dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gir1.2-ayatanaappindicator3-0.1 libcairo2-dev libgirepository1.0-dev
+
+      - run: pip install -e ".[build]"
+
+      - name: Build
+        run: pyinstaller Espresso.spec --noconfirm
+
+      - name: Package (macOS)
+        if: runner.os == 'macOS'
+        # ditto preserves the bundle structure and resource forks; zip does not.
+        run: ditto -c -k --sequesterRsrc --keepParent dist/Espresso.app ${{ matrix.artifact }}.zip
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path dist/Espresso.exe -DestinationPath ${{ matrix.artifact }}.zip
+
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          chmod +x dist/Espresso
+          zip -j ${{ matrix.artifact }}.zip dist/Espresso
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.zip
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Publish
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          files: artifacts/*.zip
+          generate_release_notes: true
+          body: |
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/master/CHANGELOG.md)
+            for what changed.
+
+            > These binaries are **not code-signed**. macOS: right-click → Open,
+            > or System Settings → Privacy & Security → Open Anyway. For the
+            > activity-simulation modes, also grant Accessibility permission.

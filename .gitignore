@@ -3,34 +3,47 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environment
+# Virtual environments
 venv/
+.venv/
 ENV/
 env/
 
-# Distribution / build folders
+# Distribution / build output
 build/
 dist/
 *.egg-info/
 *.egg
 *.whl
 
-# PyInstaller
-*.spec
+# PyInstaller artefacts.
+# Espresso.spec is the build recipe and IS tracked — only generated specs and
+# the binaries they produce are ignored.
 *.exe
-*.app
+*.app/
 *.dmg
+!Espresso.spec
+
+# Test and lint caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+
+# Local config
+.env
 
 # macOS
 .DS_Store
 .AppleDouble
 .LSOverride
-
+__MACOSX/
 
 # Windows
 Thumbs.db
 desktop.ini
-
 
 # Linux
 *~
@@ -39,12 +52,10 @@ desktop.ini
 # Logs
 *.log
 
-# Editor folders
-.vscode/
+# Editors — shared VS Code settings are tracked, personal state is not
 .idea/
 *.sublime-project
 *.sublime-workspace
-
-# Other
-__MACOSX/
-.DS_Store
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
