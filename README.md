@@ -6,7 +6,7 @@
 
 **Keep your computer awake. From the menu bar, in one click.**
 
-[![CI](https://github.com/abhijith-p-subash/espresso/actions/workflows/ci.yml/badge.svg)](https://github.com/abhijith-p-subash/espresso/actions/workflows/ci.yml)
+[![CI](https://github.com/abhijith-p-subash/espresso/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/abhijith-p-subash/espresso/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
 [![Platforms](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)](#installation)
