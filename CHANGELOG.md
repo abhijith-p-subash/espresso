@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-08-10
+
+Quieter and lighter. Espresso now runs with no permissions on any platform out
+of the box, and uses less memory than v1.0.1 did.
+
+### Upgrade note
+
+**If you relied on Espresso keeping your chat presence green, switch the mode
+back.** The default no longer simulates keystrokes. Open the tray menu →
+**Mode** → **Sleep + activity**. Saved settings are untouched, so this only
+affects installs that never changed the mode.
+
 ### Changed
 
 - **The default mode is now `system`** (prevent sleep only), which requires no
@@ -88,6 +100,7 @@ alive but does not stop the OS power manager from suspending the machine.
 - Initial release: tray icon with Start/Stop/Quit, F15 keystroke simulation,
   PyInstaller builds for Windows, macOS and Linux.
 
-[Unreleased]: https://github.com/abhijith-p-subash/espresso/compare/v1.1.0...HEAD
-[1.1.0]: https://github.com/abhijith-p-subash/espresso/compare/v1.0.0...v1.1.0
+[Unreleased]: https://github.com/abhijith-p-subash/espresso/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/abhijith-p-subash/espresso/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/abhijith-p-subash/espresso/compare/v1.0.1...v1.1.0
 [1.0.0]: https://github.com/abhijith-p-subash/espresso/releases/tag/v1.0.0

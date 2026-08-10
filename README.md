@@ -144,7 +144,7 @@ Launch it and a cup appears in your tray. Click it:
   Mode      ▸   Sleep + activity · Prevent sleep only · Simulate activity only
 ─────────────────────────────
   Open log file
-  Espresso v1.1.0
+  Espresso v1.2.0
 ─────────────────────────────
   Quit
 ```
