@@ -4,9 +4,15 @@
 Build with:  pyinstaller Espresso.spec --noconfirm
 
 Output:
-    macOS    dist/Espresso.app   (onedir — a bundle cannot be a single file)
-    Windows  dist/Espresso.exe   (onefile)
-    Linux    dist/Espresso       (onefile)
+    macOS    dist/Espresso.app
+    Windows  dist/Espresso/Espresso.exe
+    Linux    dist/Espresso/Espresso
+
+Everything is built onedir. A macOS .app has to be (it is a directory), and on
+Windows and Linux it is the better default anyway: a onefile build unpacks the
+whole ~36 MB payload into a temp directory on *every* launch, which is slow,
+churns the disk, and is one of the patterns antivirus heuristics flag most
+readily. Onedir starts immediately and is far less likely to be quarantined.
 """
 
 import re
@@ -69,11 +75,10 @@ common = dict(
     icon=ICONS.get(sys.platform),
 )
 
+exe = EXE(pyz, a.scripts, [], exclude_binaries=True, **common)
+coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name="Espresso")
+
 if IS_MACOS:
-    # A .app is a directory, so the bundle must be built onedir. Combining
-    # onefile with BUNDLE is deprecated and becomes an error in PyInstaller 7.
-    exe = EXE(pyz, a.scripts, [], exclude_binaries=True, **common)
-    coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name="Espresso")
     app = BUNDLE(
         coll,
         name="Espresso.app",
@@ -91,5 +96,3 @@ if IS_MACOS:
             ),
         },
     )
-else:
-    exe = EXE(pyz, a.scripts, a.binaries, a.datas, [], runtime_tmpdir=None, **common)

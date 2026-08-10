@@ -10,7 +10,11 @@ from PIL import Image, ImageDraw
 
 log = logging.getLogger(__name__)
 
-ICON_SIZE = 128
+#: Tray icons render at roughly 22-44 px even on HiDPI displays. The bundled
+#: artwork is 1280x1280, which costs 6.2 MB of RAM per decoded copy and buys
+#: nothing — we keep two (active and paused), so this scaling is most of the
+#: app's resident memory.
+ICON_SIZE = 64
 
 
 def assets_dir() -> Path:
@@ -37,14 +41,20 @@ def _fallback_icon() -> Image.Image:
 
 
 def base_icon() -> Image.Image:
-    """The tray icon artwork, or a drawn fallback if the asset is unavailable."""
+    """The tray icon artwork, scaled down, or a fallback if it can't be read."""
     path = resource_path("c5.png")
     try:
         with Image.open(path) as image:
-            return image.convert("RGBA")
+            # draft() lets the JPEG/PNG decoder skip pixels it will never need,
+            # so oversized artwork is never fully decoded in the first place.
+            image.draft("RGBA", (ICON_SIZE, ICON_SIZE))
+            icon = image.convert("RGBA")
     except (OSError, ValueError) as exc:
         log.warning("Could not load icon %s (%s); using fallback artwork", path, exc)
         return _fallback_icon()
+    if max(icon.size) > ICON_SIZE:
+        icon.thumbnail((ICON_SIZE, ICON_SIZE), Image.LANCZOS)
+    return icon
 
 
 def idle_icon(active: Image.Image) -> Image.Image:

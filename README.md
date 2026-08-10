@@ -38,11 +38,15 @@ assertion does not touch.
 
 So Espresso does both, and lets you pick:
 
-| Mode | What it does | Use it when |
+| Mode | What it does | Permissions |
 | --- | --- | --- |
-| **Sleep + activity** (default) | Power assertion **and** a keystroke | You want the obvious thing |
-| **Prevent sleep only** | Power assertion, no synthetic input | You'd rather not grant input permissions |
-| **Simulate activity only** | A keystroke every interval | You only care about looking "available" |
+| **Prevent sleep only** (default) | Power assertion, no synthetic input | **None, on any OS** |
+| **Sleep + activity** | Power assertion **and** a keystroke | macOS Accessibility |
+| **Simulate activity only** | A keystroke every interval | macOS Accessibility |
+
+The default is deliberately the one that needs nothing granted: Espresso keeps
+your machine awake out of the box without a single permission prompt. Switch
+modes from the tray menu if you also want chat presence kept green.
 
 Under the hood it uses each platform's supported mechanism:
 
@@ -73,18 +77,42 @@ your documents or trigger a shortcut.
 
 Grab the latest from [Releases](https://github.com/abhijith-p-subash/espresso/releases/latest):
 
-| Platform | File |
-| --- | --- |
-| Windows | `Espresso-windows.zip` |
-| macOS   | `Espresso-macos.zip` |
-| Linux   | `Espresso-linux.zip` |
+| Platform | File | Unzip, then run |
+| --- | --- | --- |
+| Windows | `Espresso-windows.zip` | `Espresso\Espresso.exe` |
+| macOS   | `Espresso-macos.zip`   | `Espresso.app` |
+| Linux   | `Espresso-linux.zip`   | `Espresso/Espresso` |
 
-> **macOS**: the app is unsigned, so the first launch needs
-> **System Settings → Privacy & Security → Open Anyway**. For the
-> *Sleep + activity* and *Simulate activity only* modes, also grant
-> **Privacy & Security → Accessibility**; without it macOS silently discards
-> the keystrokes. Espresso detects this and offers a menu shortcut to the
-> right settings pane.
+There is no installer. Unzip anywhere and run it — Espresso writes nothing
+outside its config and log files.
+
+<details>
+<summary><b>Why does my OS warn me about this download?</b></summary>
+
+Because the binaries are **not code-signed**. Signing costs money and identity
+verification, and this is a free side project — see
+[Code signing](RELEASING.md#code-signing) for where that stands.
+
+The warning is about *provenance*, not behaviour: your OS is saying "I can't
+verify who published this", not "this does something dangerous". Every
+unsigned download gets the same treatment, and building from source yourself
+produces no warning at all.
+
+- **Windows** — SmartScreen shows a blue "Windows protected your PC" screen.
+  Click **More info → Run anyway**. The warning appears because the file was
+  downloaded from the internet; the same binary built locally is silent.
+- **macOS** — right-click the app → **Open**, or go to
+  **System Settings → Privacy & Security → Open Anyway**.
+
+If that isn't acceptable in your environment, build from source. The
+`Espresso.spec` recipe is committed and produces the same artefacts.
+
+</details>
+
+> **macOS keystroke modes only**: *Sleep + activity* and *Simulate activity
+> only* need **System Settings → Privacy & Security → Accessibility**; without
+> it macOS silently discards the keystrokes. Espresso detects this and offers a
+> menu shortcut to the right pane. The default mode needs nothing.
 
 ### From source
 
@@ -159,9 +187,34 @@ pip install -e ".[build]"
 pyinstaller Espresso.spec --noconfirm
 ```
 
-Output lands in `dist/` — `Espresso.app` on macOS, `Espresso.exe` on Windows,
-`Espresso` on Linux. The spec is committed, so every platform builds the same
-way; it sets `LSUIElement` on macOS so the app stays out of the Dock.
+Output lands in `dist/`: `Espresso.app` on macOS, `Espresso/Espresso.exe` on
+Windows, `Espresso/Espresso` on Linux. The spec is committed, so every platform
+builds the same way; it sets `LSUIElement` on macOS so the app stays out of the
+Dock.
+
+Builds are **onedir**, not onefile. A onefile executable unpacks its whole
+~36 MB payload into a temp directory on every single launch — slow, hard on the
+disk, and one of the patterns antivirus heuristics flag most readily. UPX
+compression is off for the same reason.
+
+## Footprint
+
+Measured on macOS, idle, with the tray icon showing:
+
+| | |
+| --- | --- |
+| Resident memory | ~80 MB |
+| CPU while idle | 0.0% |
+| Startup | well under a second |
+
+Most of that memory is the embedded Python runtime and the GUI bindings, which
+is the price of a cross-platform tray app in Python. The application's own
+working set is a few hundred KB: it wakes on a timer, calls one OS function,
+and goes back to sleep.
+
+If you are curious where the rest went — the tray artwork used to be a
+1280×1280 PNG, which cost 6.2 MB of RAM per decoded copy for pixels no tray can
+display. It is now 256×256, scaled to 64 px on load.
 
 ## Project layout
 
@@ -191,14 +244,19 @@ display server.
 
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the dev
-setup, and please read the [Code of Conduct](CODE_OF_CONDUCT.md).
+Contributions are welcome.
 
 ```bash
 pip install -e ".[dev]"
-pytest
-ruff check . && ruff format --check .
+make check          # lint + tests, exactly what CI runs
 ```
+
+| Document | For |
+| --- | --- |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Dev setup, opening a PR, code layout, the traps |
+| [RELEASING.md](RELEASING.md) | Maintainers cutting a version |
+| [SECURITY.md](SECURITY.md) | Reporting a vulnerability |
+| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | How we treat each other |
 
 ## License
 

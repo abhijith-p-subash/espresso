@@ -39,8 +39,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--mode",
         choices=MODES,
         help=(
-            "both: inhibit sleep and simulate activity (default); "
-            "system: inhibit sleep only; activity: simulate keystrokes only"
+            "system: inhibit sleep only, needs no permissions (default); "
+            "both: also simulate activity to keep chat presence green; "
+            "activity: simulate keystrokes only"
         ),
     )
     parser.add_argument(

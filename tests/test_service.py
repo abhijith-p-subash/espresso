@@ -14,6 +14,9 @@ def wait_for(predicate, timeout=5.0):
 
 
 def make_service(backend, simulator, **kwargs):
+    # Most of these tests assert on both mechanisms, so ask for both explicitly
+    # rather than inheriting whatever the app default happens to be.
+    kwargs.setdefault("mode", "both")
     config = Config(interval=kwargs.pop("interval", 5), **kwargs)
     return KeepAwakeService(config, backend=backend, simulator=simulator)
 

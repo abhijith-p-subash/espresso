@@ -2,11 +2,19 @@
 
 Thanks for taking the time. Bug reports, fixes and ideas are all welcome.
 
+Espresso is small, so don't overthink it: for a typo or an obvious bug, just
+open a PR. For anything that changes behaviour or adds a dependency, open an
+issue first so we can agree on the shape before you write code.
+
+> Maintainer publishing a version? That lives in [RELEASING.md](RELEASING.md).
+
 ## Getting set up
 
 ```bash
-git clone https://github.com/abhijith-p-subash/espresso.git
+# Fork the repo on GitHub first, then clone your fork
+git clone https://github.com/<your-username>/espresso.git
 cd espresso
+git remote add upstream https://github.com/abhijith-p-subash/espresso.git
 
 python -m venv venv
 source venv/bin/activate      # macOS/Linux
@@ -21,16 +29,80 @@ Run it from source:
 python -m espresso --log-level DEBUG
 ```
 
-## Before you open a PR
+On Linux you also need a tray implementation — `gir1.2-appindicator3-0.1`
+(Debian/Ubuntu) or `libappindicator-gtk3` (Fedora).
+
+## Opening a pull request
+
+### 1. Branch from an up-to-date master
+
+```bash
+git checkout master
+git pull upstream master
+git checkout -b fix/tray-icon-flicker
+```
+
+Use a short, descriptive branch name. `fix/`, `feat/` and `docs/` prefixes are
+nice but not required.
+
+### 2. Make your change
+
+Keep it focused — one problem per PR. A PR that fixes a bug *and* reformats
+half the codebase is hard to review and hard to revert.
+
+Add or update tests for anything you change. If you fix a bug, the ideal PR has
+a test that fails before your fix and passes after it.
+
+Update `CHANGELOG.md` under **Unreleased** if the change is user-visible.
+
+### 3. Check it locally
+
+```bash
+make check          # lint + tests, exactly what CI runs
+```
+
+Or individually:
 
 ```bash
 pytest                      # the full suite, ~1s
 ruff check .                # lint
-ruff format --check .       # formatting
+ruff format .               # auto-fix formatting
 ```
 
-All three run in CI on macOS, Windows and Linux, so it is cheapest to run them
-locally first.
+CI runs all of this on macOS, Windows and Linux, so it is much cheaper to catch
+problems here first.
+
+### 4. Commit and push
+
+```bash
+git add -A
+git commit -m "Stop the tray icon flickering on state change"
+git push -u origin fix/tray-icon-flicker
+```
+
+Short imperative subject line, and explain *why* in the body when it isn't
+obvious from the diff. Conventional-commit prefixes (`fix:`, `feat:`, `docs:`)
+are welcome but not required.
+
+### 5. Open the PR
+
+Push prints a link, or use the "Compare & pull request" banner on GitHub. Target
+`master`. Fill in the template — especially **which platforms you tested on**,
+since no automated test can verify that a tray icon actually appears and
+behaves.
+
+Then watch CI. A red build is expected sometimes; push a follow-up commit to the
+same branch and the PR updates itself.
+
+### Keeping your branch current
+
+If `master` moves while your PR is open:
+
+```bash
+git fetch upstream
+git rebase upstream/master
+git push --force-with-lease
+```
 
 ## How the code is organised
 
@@ -79,6 +151,10 @@ otherwise. This is what `EspressoTray.refresh()` is for.
 dispatches handlers between bytecodes, and the main thread is parked inside
 `NSApplication.run()`. `signals.py` exists specifically to solve this; use it.
 
+**Watch the memory.** This is a background app people leave running all day.
+Tray artwork is deliberately small — a 1280×1280 PNG once cost 6.2 MB of RAM
+per decoded copy for pixels no tray can display.
+
 ## Tests
 
 `pytest` must pass without a display server. If you need pystray in a test,
@@ -88,33 +164,18 @@ Prefer testing behaviour over implementation, and give tests names that state
 the expectation — `test_stop_is_prompt_even_with_a_long_interval` beats
 `test_stop_2`.
 
-## Commit messages
+Platform-specific behaviour deserves a platform-specific test rather than a
+blanket skip. POSIX and Windows file locking differ in a way that matters, so
+`tests/test_singleton.py` asserts the correct thing on each instead of switching
+itself off on Windows.
 
-Short imperative subject line, and explain *why* in the body when it isn't
-obvious. Conventional-commit prefixes (`fix:`, `feat:`, `docs:`) are welcome
-but not required.
+## Manual testing
 
-## Releasing (maintainers)
+Automated tests cannot see a tray icon. Before marking a PR ready, run the app
+and check:
 
-1. Bump `__version__` in `src/espresso/__init__.py`. That is the only place a
-   version number is written — `pyproject.toml` and `Espresso.spec` both read
-   it from there.
-2. Move the `Unreleased` entries in `CHANGELOG.md` under the new version, and
-   update the link definitions at the bottom.
-3. Commit, then tag and push:
-
-   ```bash
-   git commit -am "Release v1.2.0"
-   git push
-   git tag v1.2.0
-   git push origin v1.2.0
-   ```
-
-Pushing a `v*` tag triggers `.github/workflows/release.yml`, which builds on
-macOS, Windows and Linux runners and attaches the three zips to a new GitHub
-release. The tag must match the version in `__init__.py` — nothing enforces
-this, so check it before tagging.
-
-If a build fails, delete the tag (`git push --delete origin v1.2.0`), fix the
-problem, and re-tag. You can also re-run the workflow by hand from the Actions
-tab via `workflow_dispatch`.
+- The icon appears, and dims when you pause it
+- The menu opens, and the status line updates after Start/Stop
+- Interval and Mode changes take effect and survive a restart
+- Quit exits cleanly and releases the inhibitor
+  (macOS: `pmset -g assertions`; Linux: `systemd-inhibit --list`)

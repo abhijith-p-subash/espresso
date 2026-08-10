@@ -29,10 +29,20 @@ def test_clamp_interval(value, expected):
 
 @pytest.mark.parametrize(
     ("value", "expected"),
-    [("both", "both"), ("SYSTEM", "system"), ("activity", "activity"), ("nope", "both")],
+    [("both", "both"), ("SYSTEM", "system"), ("activity", "activity"), ("nope", "system")],
 )
 def test_normalize_mode(value, expected):
     assert normalize_mode(value) == expected
+
+
+def test_default_mode_needs_no_permissions():
+    """Out of the box Espresso must not require a macOS Accessibility grant.
+
+    Only the keystroke simulation needs it, so the default must not include it.
+    """
+    assert Config().mode == "system"
+    assert Config().inhibits_system
+    assert not Config().simulates_activity
 
 
 def test_mode_properties():
@@ -78,7 +88,7 @@ def test_out_of_range_values_are_repaired(tmp_path):
     path.write_text(json.dumps({"interval": -5, "mode": "turbo"}), encoding="utf-8")
     loaded = Config.load(path)
     assert loaded.interval == MIN_INTERVAL
-    assert loaded.mode == "both"
+    assert loaded.mode == "system"
 
 
 def test_save_leaves_no_temp_file(tmp_path):

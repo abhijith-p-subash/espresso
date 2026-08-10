@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **The default mode is now `system`** (prevent sleep only), which requires no
+  permissions on any platform. Espresso now works out of the box with no macOS
+  Accessibility prompt; keystroke simulation is opt-in from the tray menu.
+- **Builds are onedir on every platform**, not just macOS. A onefile executable
+  unpacked its whole ~36 MB payload to a temp directory on every launch, which
+  is slow and is one of the patterns antivirus heuristics flag most readily.
+  Windows and Linux releases are now a folder containing the executable.
+- Tray artwork reduced from 1280×1280 to 256×256, and scaled to 64 px on load.
+  A tray icon renders at 22–44 px; the original cost 6.2 MB of RAM per decoded
+  copy, and two are held. Resident memory dropped from ~103 MB to ~80 MB —
+  below the ~93 MB of v1.0.1. The full-size artwork is kept as
+  `assets/c5-source.png` for regenerating the `.icns` and `.ico`.
+
+### Fixed
+
+- Windows lock-file test assumed POSIX semantics. `msvcrt.locking` is mandatory
+  rather than advisory, so the file cannot be read while the lock is held.
+
 ## [1.1.0] - 2026-08-09
 
 The headline: Espresso now actually prevents your computer from sleeping.

@@ -52,13 +52,15 @@ jobs:
 
       - name: Package (Windows)
         if: runner.os == 'Windows'
-        run: Compress-Archive -Path dist/Espresso.exe -DestinationPath ${{ matrix.artifact }}.zip
+        # Zip the whole onedir folder so unzipping yields Espresso\Espresso.exe
+        # with its libraries beside it.
+        run: Compress-Archive -Path dist/Espresso -DestinationPath ${{ matrix.artifact }}.zip
 
       - name: Package (Linux)
         if: runner.os == 'Linux'
         run: |
-          chmod +x dist/Espresso
-          zip -j ${{ matrix.artifact }}.zip dist/Espresso
+          chmod +x dist/Espresso/Espresso
+          cd dist && zip -r ../${{ matrix.artifact }}.zip Espresso
 
       - uses: actions/upload-artifact@v4
         with:

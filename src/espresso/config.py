@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 #:
 #: ``system``   — ask the OS power manager to inhibit sleep (the reliable one).
 #: ``activity`` — tap a harmless key so apps see "user is present".
-#: ``both``     — do both. Default, because they solve different problems.
+#: ``both``     — do both; they solve different problems.
 MODES = ("both", "system", "activity")
 
 MIN_INTERVAL = 5
@@ -24,7 +24,11 @@ INTERVAL_PRESETS = (30, 60, 120, 300, 600)
 
 
 DEFAULT_INTERVAL = 60
-DEFAULT_MODE = "both"
+#: ``system`` is the default because it needs no permissions on any platform:
+#: it prevents sleep out of the box with nothing to grant and nothing to
+#: prompt about. Synthetic keystrokes — the only part that needs macOS
+#: Accessibility access — are opt-in via the tray menu.
+DEFAULT_MODE = "system"
 
 
 def clamp_interval(value: object, fallback: int = DEFAULT_INTERVAL) -> int:
