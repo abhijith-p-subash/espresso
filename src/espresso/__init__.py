@@ -1,6 +1,6 @@
 """Espresso — a tiny cross-platform tray app that keeps your computer awake."""
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 APP_NAME = "Espresso"
 APP_ID = "com.abhijithpsubash.espresso"
